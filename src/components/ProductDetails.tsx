@@ -3,9 +3,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useCart } from '@/context/CartContext';
-import { Product } from '@/types';
+import { useCart } from '@/app/context/CartContext';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+type Product = {
+  _id: number;
+  title: string;
+  price: number;
+  image: string;
+  description: string;
+  imageUrl: string;
+};
+
+
 
 interface ProductDetailsProps {
   product: Product;
@@ -32,7 +43,7 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
       <h1>{product.title}</h1>
       <p>{product.description}</p>
       <p>Price: ${product.price}</p>
-      <img src={product.imageUrl} alt={product.title} />
+      <Image src={product.imageUrl} alt={product.title} />
 
       <button onClick={handleAddToCart}>Add to Cart</button>
 

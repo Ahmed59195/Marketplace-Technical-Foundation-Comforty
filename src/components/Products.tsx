@@ -3,9 +3,18 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
+// Define the type for a Product
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  imageUrl: string;
+  inStock: boolean;
+}
+
 const Products = () => {
   // Sample data for products (name, price, stock status)
-  const products = [
+  const products: Product[] = [
     {
       id: 1,
       name: "Product 1",
@@ -64,10 +73,11 @@ const Products = () => {
     },
   ];
 
-  const [cart, setCart] = useState<any[]>([]); // Cart state to store the added products
+  // Cart state to store the added products, typed with Product[]
+  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
 
-  // Function to add product to the cart
-  const addToCart = (product: any) => {
+  // Function to add product to the cart, typed to accept a Product
+  const addToCart = (product: Product) => {
     if (!product.inStock) {
       alert('Sorry, this product is out of stock.');
       return;
@@ -75,17 +85,17 @@ const Products = () => {
 
     setCart((prevCart) => {
       // Check if the product is already in the cart
-      const existingProduct = prevCart.find((item) => item.id === product.id);
+      const existingProduct = prevCart.find((item) => item.product.id === product.id);
       if (existingProduct) {
         // If product is already in the cart, increase the quantity
         return prevCart.map((item) =>
-          item.id === product.id
+          item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
         // If not in cart, add the product with quantity 1
-        return [...prevCart, { ...product, quantity: 1 }];
+        return [...prevCart, { product, quantity: 1 }];
       }
     });
   };
@@ -144,9 +154,9 @@ const Products = () => {
       <div className="mt-10">
         <h2 className="font-semibold text-xl text-gray-800">Your Cart</h2>
         <ul>
-          {cart.map((product) => (
-            <li key={product.id} className="mt-2 text-gray-700">
-              {product.name} - {product.quantity} x {product.price}
+          {cart.map((item) => (
+            <li key={item.product.id} className="mt-2 text-gray-700">
+              {item.product.name} - {item.quantity} x {item.product.price}
             </li>
           ))}
         </ul>
