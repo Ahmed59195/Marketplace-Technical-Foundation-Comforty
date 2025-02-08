@@ -1,7 +1,8 @@
 'use client'; // Ensure this is a client-side component
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // To handle routing (e.g., redirecting back to the home page)
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // To handle routing (e.g., redirecting back to the home page)
+import { useSearchParams } from 'next/navigation'; // Use for getting query params in app directory
 
 type Product = {
   _id: string;
@@ -13,21 +14,29 @@ type Product = {
 const OrderConfirmationPage = () => {
   const [cart, setCart] = useState<Product[]>([]); // State for storing cart items
   const [shippingDetails, setShippingDetails] = useState({
-    name: "",
-    address: "",
-    city: "",
-    zip: "",
+    name: '',
+    address: '',
+    city: '',
+    zip: '',
   });
+
   const router = useRouter();
+  const searchParams = useSearchParams(); // Hook to get query parameters
 
-  // Load cart and shipping details after order completion
+  // Load cart and shipping details from query parameters
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const storedShippingDetails = JSON.parse(localStorage.getItem("shippingDetails") || "{}");
+    const cartParam = searchParams.get('cart');
+    const shippingDetailsParam = searchParams.get('shippingDetails');
 
-    setCart(storedCart);
-    setShippingDetails(storedShippingDetails);
-  }, []);
+    if (cartParam && shippingDetailsParam) {
+      // Parse cart and shipping details from query params
+      setCart(JSON.parse(cartParam));
+      setShippingDetails(JSON.parse(shippingDetailsParam));
+    } else {
+      // Handle missing query parameters (optional)
+      console.warn('Cart or shipping details are missing.');
+    }
+  }, [searchParams]);
 
   // Calculate total price of the order
   const calculateTotal = () => {
@@ -44,10 +53,10 @@ const OrderConfirmationPage = () => {
 
         <div className="mb-6">
           <h3 className="text-lg font-semibold">Shipping Information</h3>
-          <p>Name: {shippingDetails.name}</p>
-          <p>Address: {shippingDetails.address}</p>
-          <p>City: {shippingDetails.city}</p>
-          <p>ZIP Code: {shippingDetails.zip}</p>
+          <p><strong>Name:</strong> {shippingDetails.name || 'N/A'}</p>
+          <p><strong>Address:</strong> {shippingDetails.address || 'N/A'}</p>
+          <p><strong>City:</strong> {shippingDetails.city || 'N/A'}</p>
+          <p><strong>ZIP Code:</strong> {shippingDetails.zip || 'N/A'}</p>
         </div>
 
         {/* Cart Summary */}
@@ -78,13 +87,13 @@ const OrderConfirmationPage = () => {
       {/* Order Confirmation Message */}
       <div className="mt-8 text-center">
         <p className="text-xl font-semibold mb-4">Your order has been successfully placed!</p>
-        <p>We'll send you an email confirmation shortly.</p>
+        <p>We will send you an email confirmation shortly.</p>
       </div>
 
       {/* Button to return to Home */}
       <div className="mt-6 text-center">
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
           className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
         >
           Return to Home
